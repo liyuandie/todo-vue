@@ -6,24 +6,25 @@
       <input class="toggleAll" :class="{isToggleAll:isToggleAll}" type="checkbox" v-model="isToggleAll" @click="toggleAll">
     </header>
     <div class="middle">
-      <ul class="list" v-for="todo in todos" :key='todo.id'>
+      <ul class="list" v-for="todo in renderTodos" :key='todo.id'>
         <li class="item" @mouseover="showDelete(todo)" @mouseout="hideDelete(todo)">
           <input type="checkbox" class="toggle" @click="toggle(todo)" :checked="todo.isDone">
           <label class="text" :class="{finish:todo.isDone}" v-text="todo.text"></label>
-          <button class="delete" :class="{show:todo.showDel}" @click="deleteItem(todo)">x</button>
+          <button class="delete" :class="{show:todo.showDel}" @click="deleteItem(todo.id)">x</button>
         </li>
       </ul>
     </div>
     <div class="footer">
-      <span class="counter"> items left</span>
+      <span class="counter">
+        <strong>{{todos.filter(t=>t.isDone===false).length}}</strong> items left</span>
       <ul class="filterBar">
         <li class="filters">
-          <a class="filterBtn">All</a>
-          <a class="filterBtn">Active</a>
-          <a class="filterBtn">Completed</a>
+          <a class="filterBtn" :class="{selected:filter==='all'}" @click="filterTodos('all')">All</a>
+          <a class="filterBtn" :class="{selected:filter==='active'}" @click="filterTodos('active')">Active</a>
+          <a class="filterBtn" :class="{selected:filter==='completed'}" @click="filterTodos('completed')">Completed</a>
         </li>
       </ul>
-      <button class="clear">Clear Completed</button>
+      <button class="clear" @click="clearCompleted">Clear Completed</button>
     </div>
   </div>
 </template>
@@ -34,15 +35,17 @@ export default {
     return {
       title: 'todos',
       todos: [],
+      renderTodos: [],
       newTodo: '',
       id: 0,
       isToggleAll: false,
+      filter: 'all'
     }
   },
   methods: {
     toggle: function (todo) {
       todo.isDone = !todo.isDone
-      console.log(todo)
+      this.todos = this.renderTodos
     },
     addTodo: function () {
       this.todos.push({
@@ -53,6 +56,8 @@ export default {
       })
       this.newTodo = ''
       this.id++
+      this.filter = 'all'
+      this.renderTodos = this.todos
     },
     toggleAll: function () {
       let isToggleAll = this.isToggleAll
@@ -61,7 +66,7 @@ export default {
         return todo
       })
       this.isToggleAll = !this.isToggleAll
-      console.log('========', this.todos)
+      //console.log('========', this.todos)
     },
     showDelete: function (todo) {
       todo.showDel = true
@@ -69,15 +74,35 @@ export default {
     hideDelete: function (todo) {
       todo.showDel = false
     },
-    deleteItem: function (todo) {
-      let id = todo.id
-      this.todos = this.todos.filter((todo) => {
-        todo.id !== id
-      })
+    deleteItem: function (id) {
+      //console.log(id)
+      this.todos = this.todos.filter(todo => todo.id != id)
+      this.changeTodos()
+    },
+    clearCompleted: function () {
+      this.todos = this.todos.filter(t => t.isDone === false)
+      this.changeTodos()
+    },
+    changeTodos: function () {
+      if (this.filter === 'active') {
+        this.renderTodos = this.todos.filter(t => t.isDone === false)
+      }
+      if (this.filter === 'completed') {
+        this.renderTodos = this.todos.filter(t => t.isDone === true)
+        console.log(this.renderTodos)
+      }
+      if (this.filter === 'all') {
+        this.renderTodos = this.todos
+      }
+    },
+    filterTodos: function (f) {
+      this.filter = f
+      this.changeTodos()
     }
-
   }
+
 }
+
 
 
 </script>
@@ -183,6 +208,7 @@ body {
 }
 .finish {
   text-decoration-line: line-through;
+  color: #777;
 }
 .text {
   white-space: pre-line;
@@ -262,6 +288,9 @@ body {
 }
 .filterBtn:sele .filter {
   display: inline;
+}
+.selected {
+  border-color: rgba(216, 30, 30, 0.3);
 }
 .clear {
   float: right;

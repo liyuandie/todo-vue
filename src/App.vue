@@ -1,32 +1,72 @@
-<template>
-  <div id="app">
-    <header>
-      <h1 class="title" v-text="title"></h1>
-      <input class="new" v-model="newTodo" @keyup.enter="addTodo" placeholder="what needs to be done?">
-      <input class="toggleAll" :class="{isToggleAll:isToggleAll}" type="checkbox" v-model="isToggleAll" @click="toggleAll">
-    </header>
-    <div class="middle">
-      <ul class="list" v-for="todo in renderTodos" :key='todo.id'>
-        <li class="item" @mouseover="showDelete(todo)" @mouseout="hideDelete(todo)">
-          <input type="checkbox" class="toggle" @click="toggle(todo)" :checked="todo.isDone">
-          <label class="text" :class="{finish:todo.isDone}" v-text="todo.text"></label>
-          <button class="delete" :class="{show:todo.showDel}" @click="deleteItem(todo.id)">x</button>
-        </li>
-      </ul>
-    </div>
-    <div class="footer">
-      <span class="counter">
-        <strong>{{todos.filter(t=>t.isDone===false).length}}</strong> items left</span>
-      <ul class="filterBar">
-        <li class="filters">
-          <a class="filterBtn" :class="{selected:filter==='all'}" @click="filterTodos('all')">All</a>
-          <a class="filterBtn" :class="{selected:filter==='active'}" @click="filterTodos('active')">Active</a>
-          <a class="filterBtn" :class="{selected:filter==='completed'}" @click="filterTodos('completed')">Completed</a>
-        </li>
-      </ul>
-      <button class="clear" @click="clearCompleted">Clear Completed</button>
-    </div>
-  </div>
+<template lang="pug">
+-let counter = "{{todos.filter(t=>t.isDone===false).length}}"
+  div(id="app")
+    header
+      h1(class="title" v-text="title")
+      input(
+        class="new" 
+        v-model="newTodo" 
+        @keyup.enter="addTodo" 
+        placeholder="what needs to be done?"
+      )
+      input(
+        class="toggleAll" 
+        :class="{isToggleAll:isToggleAll}" 
+        type="checkbox" 
+        v-model="isToggleAll" 
+        @click="toggleAll"
+        )
+    div(class="middle")
+      ul(
+        class="list" 
+        v-for="todo in renderTodos" 
+        :key='todo.id'
+        )
+        li(
+          class="item" 
+          @mouseover="showDelete(todo)" 
+          @mouseout="hideDelete(todo)"
+          )
+          input(
+            type="checkbox" 
+            class="toggle" 
+            @click="toggle(todo)" 
+            :checked="todo.isDone"
+            )
+          label(
+            class="text" 
+            :class="{finish:todo.isDone}" 
+            v-text="todo.text"
+            )
+          button(
+            class="delete" 
+            :class="{show:todo.showDel}" 
+            @click="deleteItem(todo.id)"
+            )
+            |x
+    div(class="footer")
+      span(class="counter") #[strong #{counter}] items left
+      ul(class="filterBar")
+        li(class="filters")
+          a(
+            class="filterBtn" 
+            :class="{selected:filter==='all'}" 
+            @click="filterTodos('all')"
+            )
+            |All
+          a(
+            class="filterBtn" 
+            :class="{selected:filter==='active'}" 
+            @click="filterTodos('active')"
+            )
+            |Active
+          a(
+            class="filterBtn" 
+            :class="{selected:filter==='completed'}" 
+            @click="filterTodos('completed')"
+            )
+            |Completed
+      button(class="clear" @click="clearCompleted") Clear Completed
 </template>
 
 <script>
@@ -102,14 +142,11 @@ export default {
   }
 
 }
-
-
-
 </script>
 
-<style>
+<style lang="stylus">
 body {
-  font: 14px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font: 14px 'Helvetica Neue', Helvetica, Arial, sans-serif;
   line-height: 1.4em;
   background: #f5f5f5;
   color: #4d4d4d;
@@ -119,12 +156,14 @@ body {
   font-weight: 300;
   padding: 0;
 }
+
 #app {
   background: #fff;
   margin: 130px 0 40px 0;
   position: relative;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
 }
+
 .title {
   position: absolute;
   top: -155px;
@@ -135,6 +174,7 @@ body {
   color: rgba(175, 47, 47, 0.15);
   text-rendering: optimizeLegibility;
 }
+
 .toggleAll {
   transform: rotate(90deg);
   outline: none;
@@ -146,15 +186,18 @@ body {
   text-align: center;
   appearance: none;
 }
+
 .toggleAll:before {
-  content: "❯";
+  content: '❯';
   font-size: 22px;
   color: #e6e6e6;
   padding: 10px 27px 10px 27px;
 }
+
 .toggleAll:checked:before {
   color: #737373;
 }
+
 .new {
   padding: 16px 16px 16px 60px;
   border: none;
@@ -172,21 +215,25 @@ body {
   color: black;
   box-sizing: border-box;
 }
+
 .middle {
   position: relative;
   z-index: 2;
   border-top: 1px solid #ededed;
 }
+
 .list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
+
 .item {
   position: relative;
   font-size: 24px;
   border-bottom: 1px solid #ededed;
 }
+
 .toggle {
   height: 40px;
   text-align: center;
@@ -200,16 +247,20 @@ body {
   border: none;
   appearance: none;
 }
+
 .toggle:after {
   content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#ededed" stroke-width="3"/></svg>');
 }
+
 .toggle:checked:after {
   content: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="-10 -18 100 135"><circle cx="50" cy="50" r="50" fill="none" stroke="#bddad5" stroke-width="3"/><path fill="#5dc2af" d="M72 25L42 71 27 56l-4 4 20 20 34-52z"/></svg>');
 }
+
 .finish {
   text-decoration-line: line-through;
   color: #777;
 }
+
 .text {
   white-space: pre-line;
   word-break: break-all;
@@ -219,6 +270,7 @@ body {
   line-height: 1.2;
   transition: color 0.4s;
 }
+
 .delete {
   position: absolute;
   top: 0;
@@ -236,16 +288,20 @@ body {
   background: none;
   transition: color 0.2s ease-out;
 }
+
 .show {
   display: block;
 }
+
 .delete:hover {
   color: #af5b5e;
 }
+
 .counter {
   float: left;
   text-align: left;
 }
+
 .footer {
   color: #777;
   padding: 10px 15px;
@@ -253,18 +309,18 @@ body {
   text-align: center;
   border-top: 1px solid #e6e6e6;
 }
+
 .footer:before {
-  content: "";
+  content: '';
   position: absolute;
   right: 0;
   bottom: 0;
   left: 0;
   height: 50px;
   overflow: hidden;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6,
-    0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6,
-    0 17px 2px -6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2), 0 8px 0 -3px #f6f6f6, 0 9px 1px -3px rgba(0, 0, 0, 0.2), 0 16px 0 -6px #f6f6f6, 0 17px 2px -6px rgba(0, 0, 0, 0.2);
 }
+
 .filterBar {
   margin: 0;
   padding: 0;
@@ -274,6 +330,7 @@ body {
   left: 0;
   height: 19.2px;
 }
+
 .filterBtn {
   color: inherit;
   margin: 3px;
@@ -283,15 +340,19 @@ body {
   border-radius: 3px;
   cursor: pointer;
 }
+
 .filterBtn:hover {
   border-color: rgba(175, 47, 47, 0.1);
 }
+
 .filterBtn:sele .filter {
   display: inline;
 }
+
 .selected {
   border-color: rgba(216, 30, 30, 0.3);
 }
+
 .clear {
   float: right;
   position: relative;
@@ -308,6 +369,7 @@ body {
   color: inherit;
   outline: none;
 }
+
 .clear:hover {
   text-decoration: underline;
 }
